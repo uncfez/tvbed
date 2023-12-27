@@ -1,5 +1,5 @@
 <script>
-  import { extractTeaser, fetchJSON } from '$lib/util';
+  import { extractTeaser, extractTeaserImage, fetchJSON } from '$lib/util';
   import PrimaryButton from '$lib/components/PrimaryButton.svelte';
   import WebsiteNav from '$lib/components/WebsiteNav.svelte';
   import Modal from '$lib/components/Modal.svelte';
@@ -16,7 +16,7 @@
   export let data;
 
   let showUserMenu = false;
-  let title, teaser, content, published_at, updatedAt;
+  let title, teaser, teaser_image, content, published_at, updatedAt;
 
   $: {
     $currentUser = data.currentUser;
@@ -25,6 +25,7 @@
 
   function initOrReset() {
     title = data.title;
+    teaser_image = data.teaser_image;
     teaser = data.teaser;
     content = data.content;
     published_at = data.published_at;
@@ -54,12 +55,14 @@
   async function saveArticle() {
     if (!$currentUser) return alert('Sorry, you are not authorized.');
     const teaser = extractTeaser(document.getElementById('article_content'));
+    const teaser_image = extractTeaserImage(document.getElementById('article_content'));
     try {
       const result = await fetchJSON('POST', '/api/update-article', {
         slug: data.slug,
         title,
         content,
-        teaser
+        teaser,
+        teaser_image
       });
       updatedAt = result.updatedAt;
       $isEditing = false;
@@ -75,9 +78,11 @@
 <svelte:head>
   <title>{title}</title>
   <meta name="description" content={teaser} />
+  <meta name="og:image" property="og:image" content={data.teaser_image || data.bio.avatar} />
 </svelte:head>
 
 <EditorToolbar on:cancel={initOrReset} on:save={saveArticle} />
+
 <WebsiteNav bind:showUserMenu />
 {#if showUserMenu}
   <Modal on:close={() => (showUserMenu = false)}>

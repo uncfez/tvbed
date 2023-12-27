@@ -1,5 +1,5 @@
 <script>
-  import { extractTeaser, fetchJSON } from '$lib/util';
+  import { extractTeaser, extractTeaserImage, fetchJSON } from '$lib/util';
   import { goto } from '$app/navigation';
   import Footer from '$lib/components/Footer.svelte';
   import EditableWebsiteTeaser from '$lib/components/EditableWebsiteTeaser.svelte';
@@ -24,11 +24,13 @@
       return alert('Sorry, you are not authorized to create new articles.');
     }
     const teaser = extractTeaser(document.getElementById('article_content'));
+    const teaser_image = extractTeaserImage(document.getElementById('article_content'));
     try {
       const { slug } = await fetchJSON('POST', '/api/create-article', {
         title,
         content,
-        teaser
+        teaser,
+        teaser_image
       });
       goto(`/blog/${slug}`);
     } catch (err) {

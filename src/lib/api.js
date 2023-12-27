@@ -15,7 +15,7 @@ db.pragma('case_sensitive_like = true');
 /**
  * Creates a new article
  */
-export async function createArticle(title, content, teaser, currentUser) {
+export async function createArticle(title, content, teaser, teaser_image, currentUser) {
   if (!currentUser) throw new Error('Not authorized');
 
     let slug = slugify(title, {
@@ -30,14 +30,15 @@ export async function createArticle(title, content, teaser, currentUser) {
     }
 
     db.prepare(`
-        INSERT INTO articles (slug, title, content, teaser, published_at)
+        INSERT INTO articles (slug, title, content, teaser, teaser_image, published_at)
         VALUES(?, ?, ?, ?, DATETIME('now'))
       `)
       .run(
         slug,
         title,
         content,
-        teaser
+        teaser,
+        teaser_image,
       );
 
   const newArticleQuery = "SELECT slug, created_at FROM articles WHERE slug = ?";
@@ -48,7 +49,7 @@ export async function createArticle(title, content, teaser, currentUser) {
 /**
  * We automatically extract a teaser text from the document's content.
  */
-export async function updateArticle(slug, title, content, teaser, currentUser) {
+export async function updateArticle(slug, title, content, teaser, teaser_image, currentUser) {
   if (!currentUser) throw new Error('Not authorized');
 
   const query = `
@@ -127,6 +128,7 @@ export async function getNextArticle(slug) {
       SELECT
         title,
         teaser,
+        teaser_image,
         slug,
         published_at
       FROM articles
@@ -139,6 +141,7 @@ export async function getNextArticle(slug) {
       SELECT
         title,
         teaser,
+        teaser_image,
         slug,
         published_at
       FROM articles
@@ -146,7 +149,7 @@ export async function getNextArticle(slug) {
       ORDER BY published_at DESC
       LIMIT 1
     )
-    SELECT title, teaser, slug, published_at
+    SELECT title, teaser, teaser_image, slug, published_at
     FROM (
       SELECT * FROM previous_published
       UNION

@@ -19,7 +19,7 @@
   // --------------------------------------------------------------------------
   // DEFAULT PAGE CONTENT - AJDUST TO YOUR NEEDS
   // --------------------------------------------------------------------------
-  const EMAIL = 'michael@letsken.com';
+  const EMAIL = 'styrelsen@turfvasterbotten.se';
 
   // Can contain spaces but must not contain the + sign
   const PHONE_NUMBER = '43 664 1533015';
@@ -59,7 +59,7 @@
 
   function initOrReset() {
     $currentUser = data.currentUser;
-    title = data.page?.title || 'Untitled Website';
+    title = data.page?.title || 'Turf Västerbotten';
     faqs = data.page?.faqs || FAQS_PLACEHOLDER;
 
     // Make a deep copy
@@ -292,7 +292,7 @@
           maxHeight="384"
           quality="0.8"
           bind:src={bioPicture}
-          alt="Michael Aufreiter"
+          alt="Turf Västerbotten"
         />
       </div>
 
