@@ -26,11 +26,11 @@ export function formatDate(dateString, withTime) {
   if (withTime) {
     if (date.toDateString() === new Date().toDateString()) {
       // on same day, only show the time
-      return date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+      return date.toLocaleString('sv-SE', { hour: 'numeric', minute: 'numeric', hour12: true });
     } else {
       const opts = {
-        month: 'short',
         day: 'numeric',
+        month: 'long',
         hour: 'numeric',
         minute: 'numeric',
         hour12: true
@@ -38,11 +38,11 @@ export function formatDate(dateString, withTime) {
       if (date.getFullYear() !== new Date().getFullYear()) {
         opts.year = 'numeric';
       }
-      return date.toLocaleDateString('en-US', opts);
+      return date.toLocaleDateString('sv-SE', opts);
     }
   } else {
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
+    return date.toLocaleDateString('sv-SE', {
+      month: 'long',
       day: 'numeric',
       year: 'numeric'
     });
@@ -66,10 +66,20 @@ export function debounce(node, params) {
 export function extractTeaser(body) {
   const teaser = [...body.querySelectorAll('p')].map(n => n.textContent).join(' ');
   if (teaser.length > 512) {
-    return teaser.slice(0, 512).concat('…');
+    return teaser.slice(0, 200).concat('…');
   } else {
     return teaser;
   }
+}
+
+export function extractTeaserImage(body) {
+  const firstImage = body.querySelector('img');
+  if (!firstImage) return undefined;
+  return {
+    src: firstImage.getAttribute('src'),
+    height: firstImage.height,
+    width: firstImage.width
+  };
 }
 
 export function resizeImage(file, maxWidth, maxHeight, quality, content_type) {

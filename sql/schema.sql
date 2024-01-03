@@ -32,9 +32,19 @@ CREATE TABLE IF NOT EXISTS articles (
   slug TEXT UNIQUE NOT NULL,
   title TEXT NOT NULL,
   teaser TEXT NOT NULL,
+  teaser_image TEXT,
   content TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   published_at DATETIME,
   updated_at DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS calevents (
+  calevent_id INTEGER PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  teaser TEXT NOT NULL,
+  content TEXT,
+  published_at DATETIME,
+  updated_at DATETIME,
 );
 COMMIT;

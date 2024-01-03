@@ -94,7 +94,7 @@
     id="search"
     name="search"
     class="block w-full border-none bg-transparent px-0 py-2 placeholder-gray-300 focus:border-black focus:text-gray-900 focus:placeholder-gray-400 focus:outline-none focus:ring-0"
-    placeholder="Search website ..."
+    placeholder="Sök ..."
     type="text"
   />
   <button
@@ -105,7 +105,7 @@
 
 {#if result.length > 0}
   <div class="font-bold text-sm px-4 sm:px-6 py-4 border-b border-gray-100">
-    {value ? 'BEST MATCHES' : 'SHORTCUTS'}
+    {value ? 'BÄSTA TRÄFFARNA' : 'GENVÄGAR'}
   </div>
 {/if}
 <div class="overflow-y-auto" bind:this={resultsEl}>

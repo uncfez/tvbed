@@ -5,8 +5,8 @@
 </script>
 
 <div>
-  <div class="py-4 text-center">Signed in as {$currentUser.name}</div>
+  <div class="py-4 text-center">Inloggad som {$currentUser.name}</div>
   <div class="flex flex-col">
-    <PrimaryButton on:click={() => goto('/logout')}>Sign out</PrimaryButton>
+    <PrimaryButton on:click={() => goto('/logout')}>Logga ut</PrimaryButton>
   </div>
 </div>

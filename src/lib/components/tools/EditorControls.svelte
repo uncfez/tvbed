@@ -153,9 +153,9 @@
         {/if}
 
         <div class="flex-1 h-8" />
-        <SecondaryButton type="button" on:click={handleCancel}>Cancel</SecondaryButton>
+        <SecondaryButton type="button" on:click={handleCancel}>Avbryt</SecondaryButton>
         <div class="shrink-0 w-2 sm:w-4" />
-        <PrimaryButton type="button" on:click={handleSave}>Save</PrimaryButton>
+        <PrimaryButton type="button" on:click={handleSave}>Spara</PrimaryButton>
       </div>
     </div>
   </div>

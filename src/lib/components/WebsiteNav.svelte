@@ -44,7 +44,7 @@
       <div class="flex items-center relative">
         <div class="flex-1" />
         <button
-          title="Search"
+          title="Sök"
           class={classNames('mr-6 hover:text-black')}
           on:click={() => (showSearch = true)}
         >
@@ -63,11 +63,10 @@
             />
           </svg>
         </button>
-        <a class="mr-4 font-medium px-2 py-1 rounded-md hover:text-black" href="/"> About </a>
-        <a class="mr-4 font-medium px-2 py-1 rounded-md hover:text-black" href="/blog"> Blog </a>
-        <a class="mr-4 font-medium px-2 py-1 rounded-md hover:text-black" href="/#contact">
-          Contact
-        </a>
+        <a class="mr-4 font-medium px-2 py-1 rounded-md hover:text-black" href="/"> Hem </a>
+        <a class="mr-4 font-medium px-2 py-1 rounded-md hover:text-black" href="/blog"> Inlägg </a>
+        <a class="mr-4 font-medium px-2 py-1 rounded-md hover:text-black" href="/kalender"> Kalender </a>
+        <a class="mr-4 font-medium px-2 py-1 rounded-md hover:text-black" href="/profilklader"> Profilkläder </a>
         <div class="flex-1" />
         {#if $currentUser}
           <button

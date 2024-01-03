@@ -70,7 +70,7 @@
       progress = undefined;
     } catch (err) {
       console.error(err);
-      alert('An error occured. Please try again');
+      alert('Något gick fel. Försök igen.');
       progress = undefined;
     }
     cancelCropping();
@@ -107,9 +107,9 @@
   on:dblclick={cancelCropping}
 >
   {#if is_safari()}
-    <span class="text-[#EF174C]">ATTENTION:</span> Use Google Chrome, Firefox, oder Microsoft Edge for optimized image quality and size.
+    <span class="text-[#EF174C]">ATTENTION:</span> Use Google Chrome, Firefox, or Microsoft Edge for optimized image quality and size.
   {:else}
-    Confirm with ENTER. Cancel with ESC.
+    Bekräfta med ENTER. Avbryt med ESC.
   {/if}
 </div>
 
@@ -117,10 +117,10 @@
   <div class="flex space-x-4 z-[60] fixed bottom-0 right-0 left-0 p-6">
     <div class="flex-1" />
     <button class="bg-[#EF174C] text-white rounded-full px-4 py-2" on:click={uploadImage}
-      >Confirm</button
+      >Bekräfta</button
     >
     <button class="bg-white text-black rounded-full px-4 py-2" on:click={cancelCropping}
-      >Cancel</button
+      >Avbryt</button
     >
     <div class="flex-1" />
   </div>

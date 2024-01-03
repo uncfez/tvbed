@@ -11,7 +11,7 @@
   <div class="max-w-screen-md mx-auto px-6">
     <div class="pt-12 sm:pt-24">
       {#if !published_at}
-        <div class="font-bold text-sm">DRAFT</div>
+        <div class="font-bold text-sm">UTKAST</div>
       {:else}
         <div class="font-bold text-sm">{formatDate(published_at)}</div>
       {/if}

@@ -15,7 +15,7 @@ db.pragma('case_sensitive_like = true');
 /**
  * Creates a new article
  */
-export async function createArticle(title, content, teaser, currentUser) {
+export async function createArticle(title, content, teaser, teaser_image, currentUser) {
   if (!currentUser) throw new Error('Not authorized');
 
     let slug = slugify(title, {
@@ -30,14 +30,15 @@ export async function createArticle(title, content, teaser, currentUser) {
     }
 
     db.prepare(`
-        INSERT INTO articles (slug, title, content, teaser, published_at)
+        INSERT INTO articles (slug, title, content, teaser, teaser_image, published_at)
         VALUES(?, ?, ?, ?, DATETIME('now'))
       `)
       .run(
         slug,
         title,
         content,
-        teaser
+        teaser,
+        teaser_image,
       );
 
   const newArticleQuery = "SELECT slug, created_at FROM articles WHERE slug = ?";
@@ -48,7 +49,7 @@ export async function createArticle(title, content, teaser, currentUser) {
 /**
  * We automatically extract a teaser text from the document's content.
  */
-export async function updateArticle(slug, title, content, teaser, currentUser) {
+export async function updateArticle(slug, title, content, teaser, teaser_image, currentUser) {
   if (!currentUser) throw new Error('Not authorized');
 
   const query = `
@@ -63,6 +64,59 @@ export async function updateArticle(slug, title, content, teaser, currentUser) {
   const updatedArticle = db.prepare(updatedArticleQuery).get(slug);
 
   return updatedArticle;
+}
+
+/**
+ * Creates a new calendar event
+ */
+export async function createCalevent(title, content, teaser, currentUser) {
+  if (!currentUser) throw new Error('Not authorized');
+
+    let slug = slugify(title, {
+      lower: true,
+      strict: true
+    });
+
+    // If slug is already used, we add a unique postfix
+    const caleventExists = db.prepare('SELECT * FROM calevents WHERE slug = ?').get(slug);
+    if (caleventExists) {
+      slug = slug + '-' + nanoid();
+    }
+
+    db.prepare(`
+        INSERT INTO calevents (slug, title, content, teaser, published_at)
+        VALUES(?, ?, ?, ?, DATETIME('now'))
+      `)
+      .run(
+        slug,
+        title,
+        content,
+        teaser,
+      );
+
+  const newCaleventQuery = "SELECT slug, created_at FROM calevents WHERE slug = ?";
+  const newCalevent = db.prepare(newCaleventQuery).get(slug);
+  return newCalevent;
+}
+
+/**
+ * We automatically extract a teaser text from the calevent's content.
+ */
+export async function updateCalevent(slug, title, content, teaser, currentUser) {
+  if (!currentUser) throw new Error('Not authorized');
+
+  const query = `
+    UPDATE calevents
+    SET title = ?, content = ?, teaser = ?, updated_at = datetime('now')
+    WHERE slug = ?
+  `;
+  const updateStmt = db.prepare(query);
+  updateStmt.run(title, content, teaser, slug);
+
+  const updatedCaleventQuery = "SELECT slug, updated_at FROM calevents WHERE slug = ?";
+  const updatedCalevent = db.prepare(updatedCaleventQuery).get(slug);
+
+  return updatedCalevent;
 }
 
 /*
@@ -127,6 +181,7 @@ export async function getNextArticle(slug) {
       SELECT
         title,
         teaser,
+        teaser_image,
         slug,
         published_at
       FROM articles
@@ -139,6 +194,7 @@ export async function getNextArticle(slug) {
       SELECT
         title,
         teaser,
+        teaser_image,
         slug,
         published_at
       FROM articles
@@ -146,7 +202,7 @@ export async function getNextArticle(slug) {
       ORDER BY published_at DESC
       LIMIT 1
     )
-    SELECT title, teaser, slug, published_at
+    SELECT title, teaser, teaser_image, slug, published_at
     FROM (
       SELECT * FROM previous_published
       UNION
@@ -159,6 +215,72 @@ export async function getNextArticle(slug) {
   const result = db.prepare(query).get(slug, slug);
   return result;
 }
+
+/**
+ * List all available calevents (furtherst first)
+ */
+export async function getCalevents(currentUser) {
+  let calevents;
+  let statement;
+
+  if (currentUser) {
+    // When logged in, show both drafts and published calevents
+    statement = db.prepare(
+      'SELECT *, COALESCE(published_at, updated_at, created_at) AS modified_at FROM calevents ORDER BY title DESC'
+    );
+  } else {
+    statement = db.prepare(
+      'SELECT * FROM calevents WHERE published_at IS NOT NULL ORDER BY title DESC'
+    );
+  }
+
+  calevents = statement.all();
+  return calevents;
+}
+
+/**
+ * Given a slug, determine event to "show next"
+ */
+export async function getNextCalevent(slug) {
+  const query = `
+    WITH previous_published AS (
+      SELECT
+        title,
+        teaser,
+        slug,
+        published_at
+      FROM calevents
+      WHERE
+        published_at < (SELECT published_at FROM calevents WHERE slug = ?)
+      ORDER BY title DESC
+      LIMIT 1
+    ),
+    latest_calevent AS (
+      SELECT
+        title,
+        teaser,
+        slug,
+        published_at
+      FROM calevents
+      WHERE slug <> ?
+      ORDER BY title DESC
+      LIMIT 1
+    )
+    SELECT title, teaser, slug, published_at
+    FROM (
+      SELECT * FROM previous_published
+      UNION
+      SELECT * FROM latest_calevent
+    )
+    ORDER BY slug ASC
+    LIMIT 1;
+  `;
+
+  const result = db.prepare(query).get(slug, slug);
+  return result;
+}
+
+
 
 /**
  * Search within all searchable items (including articles and website sections)
@@ -215,9 +337,26 @@ export async function deleteArticle(slug, currentUser) {
 }
 
 /**
- * In this minimal setup there is only one user, the website admin.
- * If you want to support multiple users/authors you want to return the current user record here.
+ * Retrieve calevent based on a given slug
  */
+export async function getCaleventBySlug(slug) {
+  const query = "SELECT * FROM calevents WHERE slug = ?";
+  const calevent = db.prepare(query).get(slug);
+  return calevent;
+}
+
+/**
+ * Remove the entire calevent
+ */
+export async function deleteCalevent(slug, currentUser) {
+  if (!currentUser) throw new Error('Not authorized');
+
+  const query = "DELETE FROM calevents WHERE slug = ?";
+  const result = db.prepare(query).run(slug);
+
+  return result.changes > 0;
+}
+
 /**
  * In this minimal setup there is only one user, the website admin.
  * If you want to support multiple users/authors you want to return the current user record here.
@@ -229,7 +368,7 @@ export async function getCurrentUser(session_id) {
   const session = stmt.get(session_id, new Date().toISOString());
 
   if (session) {
-    return { name: 'Admin' };
+    return { name: 'Turf Västerbotten' };
   } else {
     return null;
   }
