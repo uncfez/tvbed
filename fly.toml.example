@@ -4,7 +4,7 @@
 #
 
 # 'app' can be overridden at deploy time with `fly deploy -a yourappname`
-app = "myapp"
+app = "tvb"
 primary_region = "cdg"
 
 # Specify the multistage Docker build target
