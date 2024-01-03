@@ -15,13 +15,15 @@ RUN npm ci --omit dev
 # copy source across (excludes items filtered by .dockerignore)
 COPY . .
 
-RUN mkdir /data && npm run build
+RUN mkdir data
 RUN --mount=type=secret,id=DB_PATH \
     --mount=type=secret,id=ADMIN_PASSWORD \
     --mount=type=secret,id=ORIGIN \
     DB_PATH="$(cat /run/secrets/DB_PATH)" \
     ADMIN_PASSWORD="$(cat /run/secrets/ADMIN_PASSWORD)" \
     ORIGIN="$(cat /run/secrets/ORIGIN)" \
+
+RUN mkdir /data && npm run build
 
 FROM node:18-slim AS runner
 RUN apt update -qq && \
