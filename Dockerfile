@@ -22,7 +22,7 @@ RUN --mount=type=secret,id=DB_PATH \
     DB_PATH="$(cat /run/secrets/DB_PATH)" \
     ADMIN_PASSWORD="$(cat /run/secrets/ADMIN_PASSWORD)" \
     ORIGIN="$(cat /run/secrets/ORIGIN)" \
-    mkdir /data && npm run build
+    npm run build
 
 FROM node:18-slim AS runner
 RUN apt update -qq && \
